@@ -6,9 +6,11 @@ Run with:  uvicorn ares.main:app --reload
 import asyncio
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from . import database, engine
 from .models import PartyJoin
@@ -117,3 +119,8 @@ async def get_system_stats():
 @app.get("/analytics/throughput")
 async def get_throughput():
     return await database.throughput()
+
+# Demo web UI (plain HTML/CSS/JS, no build step) served at /ui.
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+if FRONTEND_DIR.is_dir():
+    app.mount("/ui", StaticFiles(directory=FRONTEND_DIR, html=True), name="ui")

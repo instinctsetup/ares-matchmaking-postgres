@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ares Matchmaking · PostgreSQL</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9876;</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">&#9876;</div>
+      <div>
+        <h1>ARES</h1>
+        <p class="tagline">Autonomous Relational Tick &middot; 5v5 Matchmaking Engine</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="db-badge">PostgreSQL</span>
+      <span id="engine-status" class="status-pill offline"><span class="dot"></span><span id="engine-status-text">connecting&hellip;</span></span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Left column: party builder -->
+    <section class="card" id="join-card">
+      <h2>Join Queue</h2>
+      <p class="hint">Build a party of 1&ndash;5 players and queue for a 5v5 match.</p>
+      <div id="party-rows"></div>
+      <div class="row-buttons">
+        <button id="add-player" class="btn ghost" type="button">+ Add player</button>
+        <button id="random-player" class="btn ghost" type="button">Random</button>
+      </div>
+      <button id="join-queue" class="btn primary" type="button">Join Queue</button>
+      <div class="divider"></div>
+      <button id="quick-demo" class="btn demo" type="button">&#9889; Quick demo: auto-fill a 10-player match</button>
+      <div id="my-parties"></div>
+    </section>
+
+    <!-- Middle column: queue + matches -->
+    <div class="stack">
+      <section class="card" id="queue-card">
+        <h2>Live Queue <span class="count-pill" id="queue-total">0</span></h2>
+        <div id="queue-list" class="queue-list empty">Queue is empty</div>
+      </section>
+
+      <section class="card" id="matches-card">
+        <h2>Recent Matches</h2>
+        <div id="matches-list" class="matches-list empty">No matches yet</div>
+      </section>
+    </div>
+
+    <!-- Right column: stats, leaderboard, throughput -->
+    <div class="stack">
+      <section class="card" id="stats-card">
+        <h2>Engine Stats</h2>
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-value" id="stat-queue">0</div><div class="stat-label">In queue</div></div>
+          <div class="stat"><div class="stat-value" id="stat-today">0</div><div class="stat-label">Matches 24h</div></div>
+          <div class="stat"><div class="stat-value" id="stat-success">0%</div><div class="stat-label">Players matched</div></div>
+          <div class="stat"><div class="stat-value" id="stat-load">0%</div><div class="stat-label">Engine load</div></div>
+        </div>
+      </section>
+
+      <section class="card" id="leaderboard-card">
+        <h2>Leaderboard</h2>
+        <ol id="leaderboard-list" class="leaderboard empty">No players yet</ol>
+      </section>
+
+      <section class="card" id="throughput-card">
+        <h2>Throughput <span class="sub">matches / min, last 30</span></h2>
+        <div id="throughput-chart" class="chart empty">No data yet</div>
+        <div id="region-split" class="region-split"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- MATCH_FOUND overlay -->
+  <div id="match-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-banner">MATCH FOUND</div>
+      <div class="modal-meta"><span id="modal-map"></span> &middot; avg Elo <span id="modal-elo"></span></div>
+      <div class="modal-teams">
+        <div class="team team-a"><h3>Team A</h3><ul id="modal-team-a"></ul></div>
+        <div class="vs">VS</div>
+        <div class="team team-b"><h3>Team B</h3><ul id="modal-team-b"></ul></div>
+      </div>
+      <button id="modal-close" class="btn primary" type="button">Lock in</button>
+    </div>
+  </div>
+
+  <div id="toast-stack"></div>
+  <script src="app.js"></script>
+</body>
+</html>

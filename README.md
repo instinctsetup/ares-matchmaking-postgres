@@ -27,6 +27,10 @@ A MySQL port of the same codebase lives at
   applies Elo stakes (+25 / -20)
 - Reporting: `/queue`, `/matches`, `/leaderboard`, `/stats`,
   `/analytics/throughput`
+- A zero-build demo web UI served by the app itself at `/ui`
+  (`frontend/` - plain HTML/CSS/JS): party builder, one-click 10-player
+  demo, live queue, MATCH_FOUND pop-up over WebSocket, match resolution,
+  leaderboard, stats and throughput charts
 
 ## Project layout
 
@@ -42,6 +46,9 @@ ares/
 tests/
   test_matchmaking_logic.py   pure unit tests, no database
   test_api.py                 end-to-end tests against a scratch database
+  test_frontend.py            the demo UI is served at /ui
+frontend/
+  index.html, style.css, app.js   demo UI (static files, no build step)
 scripts/
   stress_test.py   queue load injector
 ```
@@ -54,6 +61,10 @@ createdb ares_db   # or: CREATE DATABASE ares_db;
 export DATABASE_URL=postgresql://ares_user:ares_password@localhost:5432/ares_db
 uvicorn ares.main:app --reload
 ```
+
+Then open the demo UI at <http://localhost:8000/ui> - build a party and
+join the queue, or hit **Quick demo** to auto-fill a 10-player match and
+watch MATCH_FOUND arrive live over the WebSocket.
 
 The app (re)creates its schema on startup - point it at a scratch database,
 not a production one. Optional load test:
@@ -70,8 +81,9 @@ export DATABASE_URL=postgresql://user@localhost/ares_test   # scratch DB
 pytest
 ```
 
-15 tests: pure matchmaking-logic units plus end-to-end API tests that join
-10 players, watch a real match form, resolve it and check Elo changes.
+17 tests: pure matchmaking-logic units, end-to-end API tests that join
+10 players, watch a real match form, resolve it and check Elo changes,
+and static-serving tests for the demo UI.
 The suite is synchronous (starlette TestClient); pytest.ini disables
 pytest-asyncio, which interferes with TestClient teardown if installed.
 
